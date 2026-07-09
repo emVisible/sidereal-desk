@@ -37,4 +37,4 @@ First public release. Desktop companion widget ready.
 
 Initial Sidereal Desk pivot from Starmap wallpaper prototype. SVG clock, twilight theming, basic tray.
 
-[0.3.0]: https://github.com/young/sidereal-desk/releases/tag/v0.3.0
+[0.3.0]: https://github.com/emVisible/sidereal-desk/releases/tag/v0.3.0
