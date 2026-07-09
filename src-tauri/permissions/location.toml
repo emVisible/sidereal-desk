@@ -1,0 +1,19 @@
+[[permission]]
+identifier = "allow-get-location"
+description = "Read observer coordinates from the Tauri runtime."
+commands.allow = ["get_location"]
+
+[[permission]]
+identifier = "allow-set-location"
+description = "Sync observer coordinates to the Tauri runtime."
+commands.allow = ["set_location"]
+
+[[permission]]
+identifier = "allow-update-tray-menu"
+description = "Sync tray menu labels and toggle states."
+commands.allow = ["update_tray_menu"]
+
+[[permission]]
+identifier = "allow-fetch-location-from-ip"
+description = "Estimate observer coordinates from HTTPS IP geolocation."
+commands.allow = ["fetch_location_from_ip"]
