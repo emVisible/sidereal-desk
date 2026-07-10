@@ -32,6 +32,31 @@ pnpm install && pnpm tauri:dev
 
 React · TypeScript · astronomy-engine · Tauri 2
 
+## Building for Release
+
+Build for specific platforms using one of these commands:
+
+**Windows:**
+```bash
+pnpm tauri:build:windows      # x86_64 (64-bit)
+pnpm tauri:build:windows:arm  # ARM64
+```
+
+**macOS:**
+```bash
+pnpm tauri:build:macos        # Universal (Intel + ARM)
+pnpm tauri:build:macos:intel  # x86_64 only
+pnpm tauri:build:macos:arm    # ARM64 only
+```
+
+**Linux:**
+```bash
+pnpm tauri:build:linux        # x86_64
+pnpm tauri:build:linux:arm    # ARM64
+```
+
+Binaries will be in `src-tauri/target/release/bundle/`.
+
 ## Docs
 
 - [Product notes](docs/v0.2-sidereal-desk.md)

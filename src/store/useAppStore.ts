@@ -19,6 +19,7 @@ export interface AppSettings {
   showLegend: boolean;
   displayMode: DisplayMode;
   preferredTimeSpeed: number;
+  dialScale: number;
 }
 
 interface AppState {
@@ -49,6 +50,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   showLegend: false,
   displayMode: "full",
   preferredTimeSpeed: 1,
+  dialScale: 1,
 };
 
 const SCRUB_THRESHOLD_MS = 5_000;

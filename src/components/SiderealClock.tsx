@@ -27,6 +27,7 @@ function arcPath(cx: number, cy: number, r: number, t0: number, t1: number) {
 interface Props {
   sky: SkyState;
   showSeconds: boolean;
+  scale?: number;
   simulated?: boolean;
   onScrub?: (deltaHours: number) => void;
   onResetTime?: () => void;
@@ -42,6 +43,7 @@ const HOUR_LABELS = [
 export function SiderealClock({
   sky,
   showSeconds,
+  scale = 1,
   simulated = false,
   onScrub,
   onResetTime,
@@ -103,6 +105,7 @@ export function SiderealClock({
     <svg
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       className={`sidereal-clock ${simulated ? "sidereal-clock--simulated" : ""}`}
+      style={{ transform: `scale(${scale})`, transformOrigin: "center", display: "block" }}
       role="img"
       aria-label={t("clockAria")}
       onWheel={handleWheel}

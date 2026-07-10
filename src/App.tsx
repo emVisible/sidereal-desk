@@ -153,6 +153,7 @@ export function App() {
           <SiderealClock
             sky={sky}
             showSeconds={settings.showSeconds}
+            scale={settings.dialScale}
             simulated={timeScrubbing}
             onScrub={scrubHours}
             onResetTime={resetTimeToNow}

@@ -953,3 +953,62 @@ body,
   color: rgba(150, 140, 120, 0.65);
 }
 
+/* ── Dial scale slider ── */
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dial-scale-slider {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right, rgba(150, 190, 220, 0.2), rgba(212, 168, 85, 0.3));
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.dial-scale-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #d4a855;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: background 0.2s;
+}
+
+.dial-scale-slider::-webkit-slider-thumb:hover {
+  background: #e8dcc8;
+  box-shadow: 0 2px 8px rgba(212, 168, 85, 0.5);
+}
+
+.dial-scale-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: #d4a855;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: background 0.2s;
+}
+
+.dial-scale-slider::-moz-range-thumb:hover {
+  background: #e8dcc8;
+  box-shadow: 0 2px 8px rgba(212, 168, 85, 0.5);
+}
+
+.slider-value {
+  min-width: 35px;
+  font-size: 11px;
+  color: rgba(180, 170, 150, 0.85);
+  text-align: right;
+  font-weight: 500;
+}
+

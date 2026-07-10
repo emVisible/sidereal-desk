@@ -13,26 +13,46 @@ export class LocationSyncError extends Error {
 
 function readGps(): Promise<ObserverLocation> {
   return new Promise((resolve, reject) => {
+    // Check if navigator.geolocation is available (may not be in Tauri)
     if (!navigator.geolocation) {
-      reject(new LocationSyncError("Geolocation unavailable"));
+      reject(new LocationSyncError("Geolocation API unavailable"));
       return;
     }
+
+    // Set a reasonable timeout to avoid blocking too long
+    const timeout = setTimeout(() => {
+      reject(new LocationSyncError("GPS request timed out"));
+    }, 8000);
+
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        clearTimeout(timeout);
         resolve({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
           elevation: pos.coords.altitude ?? 0,
         });
       },
-      (err) => reject(new LocationSyncError(err.message)),
-      { enableHighAccuracy: true, timeout: 12_000, maximumAge: 120_000 },
+      (err) => {
+        clearTimeout(timeout);
+        reject(new LocationSyncError(err.message));
+      },
+      { enableHighAccuracy: false, timeout: 6000, maximumAge: 0 },
     );
   });
 }
 
 async function readIp(): Promise<ObserverLocation> {
-  return invoke<ObserverLocation>("fetch_location_from_ip");
+  try {
+    const result = await invoke<ObserverLocation>("fetch_location_from_ip");
+    if (!result || typeof result.latitude !== "number" || typeof result.longitude !== "number") {
+      throw new LocationSyncError("Invalid location data from IP API");
+    }
+    return result;
+  } catch (error) {
+    const message = error instanceof LocationSyncError ? error.message : "IP geolocation failed";
+    throw new LocationSyncError(message);
+  }
 }
 
 /** GPS first, then HTTPS IP estimate. */

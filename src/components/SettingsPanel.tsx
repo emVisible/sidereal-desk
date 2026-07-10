@@ -239,6 +239,22 @@ export function SettingsPanel() {
                     </label>
                   )}
                 </div>
+                <label className="settings-field">
+                  <span className="field-label">{t("dialScale") || "Dial Scale"}</span>
+                  <span className="field-tip">{t("tipDialScale") || "Adjust the size of the sidereal dial"}</span>
+                  <div className="slider-container">
+                    <input
+                      type="range"
+                      min="0.6"
+                      max="1.4"
+                      step="0.1"
+                      value={settings.dialScale}
+                      onChange={(e) => patchSettings({ dialScale: parseFloat(e.target.value) })}
+                      className="dial-scale-slider"
+                    />
+                    <span className="slider-value">{(settings.dialScale * 100).toFixed(0)}%</span>
+                  </div>
+                </label>
               </section>
 
               <section className="settings-section">
