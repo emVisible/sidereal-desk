@@ -24,9 +24,8 @@ env:
 
 jobs:
   build:
-    name: Build Windows x64
+    name: Build windows-x64
     runs-on: windows-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -58,48 +57,23 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build app
+      - name: Build app bundle
         run: pnpm tauri:build:windows
 
-      # ===== 调试信息 =====
-
-      - name: Show release directory
-        shell: pwsh
-        run: |
-          Write-Host "========== target/release =========="
-          if (Test-Path "src-tauri/target/release") {
-            Get-ChildItem "src-tauri/target/release"
-          } else {
-            Write-Host "target/release not found"
-          }
-
-      - name: Show bundle directory
-        shell: pwsh
-        run: |
-          Write-Host "========== bundle =========="
-
-          if (Test-Path "src-tauri/target/release/bundle") {
-            Get-ChildItem "src-tauri/target/release/bundle" -Recurse |
-              Select-Object FullName
-          }
-          else {
-            Write-Host "bundle directory not found"
-          }
 
       - name: Upload Windows build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: sidereal-desk-windows-x64
           path: |
-            src-tauri/target/release/bundle/**/*.exe
-            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/**/bundle/**/*.exe
+            src-tauri/target/**/bundle/**/*.msi
           if-no-files-found: error
 
   release:
     name: Publish GitHub Release
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Resolve release tag
         id: version
@@ -109,7 +83,6 @@ jobs:
           else
             TAG="${GITHUB_REF_NAME}"
           fi
-
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
 
@@ -124,24 +97,27 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
 
+          # Find header line number for the version
           HEADLINE=$(grep -nE "^##[[:space:]]*\[?${VERSION}\]?($|[[:space:]]|-|\])" CHANGELOG.md | head -n1 | cut -d: -f1 || true)
 
           if [ -n "$HEADLINE" ]; then
             START=$HEADLINE
-
+            # Find the next top-level '##' header after START
             RELNEXT=$(tail -n +$((START+1)) CHANGELOG.md | grep -nE "^##[[:space:]]*" | head -n1 | cut -d: -f1 || true)
-
             if [ -n "$RELNEXT" ]; then
               END=$((START + RELNEXT - 1))
             else
               END=$(wc -l < CHANGELOG.md)
             fi
-
             sed -n "${START},${END}p" CHANGELOG.md > release-notes.md
+          else
+            echo "No specific CHANGELOG header found for version ${VERSION}" >&2
           fi
 
+          # If extraction failed or produced empty file, fall back to full changelog
           if [ ! -s release-notes.md ]; then
-            cp CHANGELOG.md release-notes.md
+            echo "Falling back to full CHANGELOG" >&2
+            cat CHANGELOG.md > release-notes.md
           fi
 
       - name: Create GitHub Release
