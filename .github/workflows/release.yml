@@ -24,28 +24,8 @@ env:
 
 jobs:
   build:
-    name: Build ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            name: windows-x64
-            build-script: pnpm tauri:build:windows
-            artifact-name: sidereal-desk-windows-x64
-            target: x86_64-pc-windows-msvc
-          - os: macos-latest
-            name: macos-universal
-            build-script: pnpm tauri:build:macos
-            artifact-name: sidereal-desk-macos-universal
-            target: universal-apple-darwin
-          - os: ubuntu-latest
-            name: linux-x64
-            build-script: pnpm tauri:build:linux
-            artifact-name: sidereal-desk-linux-x64
-            target: x86_64-unknown-linux-gnu
-
+    name: Build windows-x64
+    runs-on: windows-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -67,42 +47,30 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.target }}
+          targets: x86_64-pc-windows-msvc
 
       - name: Rust cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
 
-      - name: Install Linux system dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libwebkit2gtk-4.1-dev \
-            libayatana-appindicator3-dev \
-            libgtk-3-dev \
-            patchelf
+      - name: Install Windows build prerequisites
+        run: echo "No extra system deps required for Windows runner"
 
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build app bundle
-        run: ${{ matrix.build-script }}
+        run: pnpm tauri:build:windows
 
-      - name: Upload build artifacts
+      - name: Upload Windows build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact-name }}
+          name: sidereal-desk-windows-x64
           path: |
             src-tauri/target/release/bundle/**/*.exe
             src-tauri/target/release/bundle/**/*.msi
-            src-tauri/target/release/bundle/**/*.dmg
-            src-tauri/target/release/bundle/**/*.pkg
-            src-tauri/target/release/bundle/**/*.AppImage
-            src-tauri/target/release/bundle/**/*.deb
-            src-tauri/target/release/bundle/**/*.tar.gz
-          if-no-files-found: warn
+          if-no-files-found: error
 
   release:
     name: Publish GitHub Release
