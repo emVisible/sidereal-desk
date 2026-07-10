@@ -60,7 +60,6 @@ jobs:
       - name: Build app bundle
         run: pnpm tauri:build:windows
 
-
       - name: Upload Windows build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -75,6 +74,12 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
+          fetch-depth: 0
+
       - name: Resolve release tag
         id: version
         run: |
