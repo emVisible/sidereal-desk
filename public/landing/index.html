@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sidereal Desk | 恒星时桌面仪</title>
+    <meta
+      name="description"
+      content="Sidereal Desk 是一台桌面角落的天文仪器，实时显示恒星时、暮光、月相，由真实历表驱动。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        font-family:
+          "DM Sans",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: linear-gradient(
+          135deg,
+          #050a15 0%,
+          #0f1422 50%,
+          #0a0e1b 100%
+        );
+        color: #e8ecf5;
+        min-height: 100vh;
+      }
+
+      body {
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5rem;
+        gap: 2rem;
+      }
+
+      .logo-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo-mark {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 8px;
+        background: rgba(215, 197, 159, 0.1);
+        border: 1px solid rgba(215, 197, 159, 0.3);
+        display: grid;
+        place-items: center;
+        font-size: 1.1rem;
+        color: #d7c59f;
+      }
+
+      .logo-text {
+        line-height: 1;
+      }
+
+      .logo-text h2 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        color: #f0e8db;
+      }
+
+      .logo-text p {
+        font-size: 0.75rem;
+        color: #a8b3c1;
+        margin-top: 0.3rem;
+      }
+
+      .nav-group {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      nav {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      nav a {
+        text-decoration: none;
+        color: #c5d0e0;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.3s ease;
+      }
+
+      nav a:hover {
+        color: #d7c59f;
+      }
+
+      .lang-toggle {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0.4rem;
+        background: rgba(215, 197, 159, 0.08);
+        border: 1px solid rgba(215, 197, 159, 0.2);
+        border-radius: 999px;
+      }
+
+      .lang-btn {
+        padding: 0.5rem 0.9rem;
+        background: transparent;
+        border: none;
+        color: #c5d0e0;
+        font-weight: 500;
+        font-size: 0.85rem;
+        cursor: pointer;
+        border-radius: 999px;
+        transition: all 0.3s ease;
+      }
+
+      .lang-btn.active {
+        background: rgba(215, 197, 159, 0.2);
+        color: #d7c59f;
+      }
+
+      /* Hero Section */
+      .hero {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+        margin-bottom: 6rem;
+      }
+
+      .hero-copy h1 {
+        font-family: "Instrument Serif", serif;
+        font-size: clamp(2.4rem, 5vw, 3.6rem);
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #f0e8db, #d7c59f);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-copy p {
+        font-size: 1.05rem;
+        line-height: 1.7;
+        color: #c5d0e0;
+        margin-bottom: 2rem;
+        max-width: 35ch;
+      }
+
+      .cta-button {
+        display: inline-block;
+        padding: 0.95rem 2.2rem;
+        background: linear-gradient(135deg, #d7c59f, #e8d9a8);
+        color: #0c1120;
+        text-decoration: none;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 24px rgba(215, 197, 159, 0.2);
+      }
+
+      .cta-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(215, 197, 159, 0.3);
+      }
+
+      .hero-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .app-preview {
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .app-preview img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 16px;
+      }
+
+      /* Features Grid */
+      .features-section {
+        margin: 6rem 0;
+      }
+
+      .section-title {
+        font-family: "Instrument Serif", serif;
+        font-size: 2rem;
+        margin-bottom: 2.5rem;
+        color: #f0e8db;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+      }
+
+      .feature-card {
+        padding: 2rem;
+        border: 1px solid rgba(215, 197, 159, 0.15);
+        border-radius: 16px;
+        background: rgba(15, 20, 35, 0.5);
+        backdrop-filter: blur(8px);
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover {
+        background: rgba(15, 20, 35, 0.7);
+        border-color: rgba(215, 197, 159, 0.25);
+        transform: translateY(-4px);
+      }
+
+      .feature-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 12px;
+        background: rgba(215, 197, 159, 0.1);
+        border: 1px solid rgba(215, 197, 159, 0.2);
+        display: grid;
+        place-items: center;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+        color: #e8ecf5;
+      }
+
+      .feature-card p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #a8b3c1;
+      }
+
+      /* Specs Section */
+      .specs-section {
+        margin: 6rem 0;
+        padding: 3rem;
+        border: 1px solid rgba(215, 197, 159, 0.15);
+        border-radius: 20px;
+        background: rgba(15, 20, 35, 0.4);
+        backdrop-filter: blur(12px);
+      }
+
+      .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+
+      .spec-item {
+        text-align: center;
+      }
+
+      .spec-value {
+        font-family: "Instrument Serif", serif;
+        font-size: 1.8rem;
+        color: #d7c59f;
+        margin-bottom: 0.5rem;
+      }
+
+      .spec-label {
+        font-size: 0.9rem;
+        color: #a8b3c1;
+      }
+
+      /* Footer */
+      footer {
+        margin-top: 6rem;
+        padding-top: 3rem;
+        border-top: 1px solid rgba(215, 197, 159, 0.1);
+        text-align: center;
+        color: #7a8592;
+        font-size: 0.9rem;
+      }
+
+      footer a {
+        color: #d7c59f;
+        text-decoration: none;
+      }
+
+      .github-icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        margin-right: 0.4em;
+        vertical-align: -0.125em;
+      }
+
+      /* Hidden content for language toggle */
+      .content-en {
+        display: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .features-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 2rem 1.5rem;
+        }
+
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          margin-bottom: 3rem;
+        }
+
+        .nav-group {
+          width: 100%;
+          flex-wrap: wrap;
+          justify-content: space-between;
+        }
+
+        nav {
+          width: 100%;
+          flex-wrap: wrap;
+        }
+
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 3rem;
+          margin-bottom: 3rem;
+        }
+
+        .hero-copy h1 {
+          font-size: 2rem;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .specs-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo-group">
+          <div class="logo-mark">✦</div>
+          <div class="logo-text">
+            <h2>Sidereal Desk</h2>
+            <p
+              class="lang-text"
+              data-zh="恒星时桌面仪"
+              data-en="Sidereal Time Instrument"
+            >
+              恒星时桌面仪
+            </p>
+          </div>
+        </div>
+        <div class="nav-group">
+          <nav>
+            <a
+              href="#features"
+              class="lang-text"
+              data-zh="功能"
+              data-en="Features"
+              >功能</a
+            >
+            <a href="#specs" class="lang-text" data-zh="规格" data-en="Specs"
+              >规格</a
+            >
+            <a href="https://github.com/emVisible/sidereal-desk" target="_blank"
+              ><svg
+                class="github-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v 3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                /></svg
+              >GitHub</a
+            >
+          </nav>
+          <div class="lang-toggle">
+            <button class="lang-btn active" data-lang="zh">中文</button>
+            <button class="lang-btn" data-lang="en">English</button>
+          </div>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-copy">
+          <h1
+            class="lang-text"
+            data-zh="时间如何被看见"
+            data-en="How Time Is Seen"
+          >
+            时间如何被看见
+          </h1>
+          <p
+            class="lang-text"
+            data-zh="Sidereal Desk 是一台桌面角落的天文仪器。它实时显示地方恒星时、暮光相位、月相，由 JPL 历表驱动。不是壁纸，不是应用，而是一个始终陪伴的观测仪。"
+            data-en="Sidereal Desk is an astronomical instrument in the corner of your desktop. It displays local sidereal time, twilight phases, and lunar phases in real-time, powered by JPL ephemerides. Not a wallpaper, not an app, but a constant observational companion."
+          >
+            Sidereal Desk
+            是一台桌面角落的天文仪器。它实时显示地方恒星时、暮光相位、月相，由
+            JPL 历表驱动。不是壁纸，不是应用，而是一个始终陪伴的观测仪。
+          </p>
+          <a
+            href="https://github.com/emVisible/sidereal-desk/releases/latest"
+            class="cta-button lang-text"
+            data-zh="立即下载"
+            data-en="Download Now"
+            >立即下载</a
+          >
+        </div>
+        <div class="hero-visual">
+          <div class="app-preview">
+            <img src="./screenshot.png" alt="Sidereal Desk 应用界面" />
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="features-section">
+        <h2
+          class="section-title lang-text"
+          data-zh="核心功能"
+          data-en="Core Features"
+        >
+          核心功能
+        </h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🕐</div>
+            <h3 class="lang-text" data-zh="恒星时钟" data-en="Sidereal Clock">
+              恒星时钟
+            </h3>
+            <p
+              class="lang-text"
+              data-zh="实时 SVG 恒星时刻盘，显示本地恒星时（LST）、太阳标、日照弧、月相。"
+              data-en="Real-time SVG sidereal time dial displaying local sidereal time (LST), sun marker, daylight arc, and lunar phase."
+            >
+              实时 SVG 恒星时刻盘，显示本地恒星时（LST）、太阳标、日照弧、月相。
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3 class="lang-text" data-zh="位置自适应" data-en="Location Sync">
+              位置自适应
+            </h3>
+            <p
+              class="lang-text"
+              data-zh="GPS 或 IP 定位自动设置观测点，也支持手动输入。"
+              data-en="Automatic location detection via GPS or IP, with manual override support."
+            >
+              GPS 或 IP 定位自动设置观测点，也支持手动输入。
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🌅</div>
+            <h3
+              class="lang-text"
+              data-zh="暮光氛围"
+              data-en="Twilight Ambiance"
+            >
+              暮光氛围
+            </h3>
+            <p
+              class="lang-text"
+              data-zh="面板色调随黄昏、民间暮光、海洋暮光、天文暮光实时变化。"
+              data-en="Panel color shifts dynamically through sunset, civil, nautical, and astronomical twilight phases."
+            >
+              面板色调随黄昏、民间暮光、海洋暮光、天文暮光实时变化。
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⏱️</div>
+            <h3 class="lang-text" data-zh="时间探索" data-en="Time Scrubbing">
+              时间探索
+            </h3>
+            <p
+              class="lang-text"
+              data-zh="鼠标滚轮快速调整时间，支持预设偏移和快捷键操作。"
+              data-en="Mouse wheel time adjustment with preset offsets and keyboard shortcuts."
+            >
+              鼠标滚轮快速调整时间，支持预设偏移和快捷键操作。
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">💾</div>
+            <h3
+              class="lang-text"
+              data-zh="数据持久化"
+              data-en="Data Persistence"
+            >
+              数据持久化
+            </h3>
+            <p
+              class="lang-text"
+              data-zh="位置、设置、窗口位置自动保存，下次启动即刻恢复。"
+              data-en="Auto-save location, settings, and window position for instant recovery on restart."
+            >
+              位置、设置、窗口位置自动保存，下次启动即刻恢复。
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3 class="lang-text" data-zh="三档布局" data-en="Three Layouts">
+              三档布局
+            </h3>
+            <p
+              class="lang-text"
+              data-zh="Full（完整）/ Compact（紧凑）/ Minimal（极简）三种显示模式自由切换。"
+              data-en="Three display modes: Full, Compact, and Minimal for flexible workspace integration."
+            >
+              Full（完整）/ Compact（紧凑）/
+              Minimal（极简）三种显示模式自由切换。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="specs" class="specs-section">
+        <h2
+          class="section-title lang-text"
+          data-zh="系统要求"
+          data-en="System Requirements"
+        >
+          系统要求
+        </h2>
+        <div class="specs-grid">
+          <div class="spec-item">
+            <div class="spec-value">Windows 10+</div>
+            <div
+              class="spec-label lang-text"
+              data-zh="操作系统"
+              data-en="Operating System"
+            >
+              操作系统
+            </div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-value">&lt; 1%</div>
+            <div
+              class="spec-label lang-text"
+              data-zh="空闲 CPU 占用"
+              data-en="Idle CPU Usage"
+            >
+              空闲 CPU 占用
+            </div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-value">&lt; 2 min</div>
+            <div
+              class="spec-label lang-text"
+              data-zh="LST 精度误差"
+              data-en="LST Accuracy"
+            >
+              LST 精度误差
+            </div>
+          </div>
+          <div class="spec-item">
+            <div class="spec-value">4 GB</div>
+            <div
+              class="spec-label lang-text"
+              data-zh="最低内存需求"
+              data-en="Min RAM"
+            >
+              最低内存需求
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p
+          class="lang-text"
+          data-zh="© 2024 Sidereal Desk. 开源协议：MIT."
+          data-en="© 2024 Sidereal Desk. MIT License."
+        >
+          © 2024 Sidereal Desk. 开源协议：MIT.
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      const langBtns = document.querySelectorAll(".lang-btn");
+      const langTexts = document.querySelectorAll(".lang-text");
+
+      let currentLang = "zh";
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem("sidereal-lang", lang);
+
+        langBtns.forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.lang === lang);
+        });
+
+        langTexts.forEach((el) => {
+          if (lang === "en") {
+            el.textContent = el.dataset.en;
+            if (el.dataset.en.includes("<a")) {
+              el.innerHTML = el.dataset.en;
+            }
+          } else {
+            el.textContent = el.dataset.zh;
+            if (el.dataset.zh.includes("<a")) {
+              el.innerHTML = el.dataset.zh;
+            }
+          }
+        });
+
+        document.documentElement.lang = lang;
+      }
+
+      langBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          setLanguage(btn.dataset.lang);
+        });
+      });
+
+      // Load saved language
+      const savedLang = localStorage.getItem("sidereal-lang") || "zh";
+      setLanguage(savedLang);
+    </script>
+  </body>
+</html>
