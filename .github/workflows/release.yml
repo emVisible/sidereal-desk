@@ -124,17 +124,28 @@ jobs:
         id: notes
         run: |
           VERSION="${{ steps.version.outputs.version }}"
-          awk -v ver="$VERSION" '
-            BEGIN { found=0 }
-            $0 ~ "^## \\[" ver "\\]" { found=1; next }
-            found && /^---/ { exit }
-            found && /^## \[/ { exit }
-            found { print }
-          ' CHANGELOG.md > release-notes.md
 
+          # Find header line number for the version (allow forms: '## [v]X', '## X', '## X — date')
+          HEADLINE=$(grep -nE "^##[[:space:]]*\[?${VERSION}\]?($|[[:space:]]|-|\])" CHANGELOG.md | head -n1 | cut -d: -f1 || true)
+
+          if [ -n "$HEADLINE" ]; then
+            START=$HEADLINE
+            # Find the next top-level '##' header after START
+            RELNEXT=$(tail -n +$((START+1)) CHANGELOG.md | grep -nE "^##[[:space:]]*" | head -n1 | cut -d: -f1 || true)
+            if [ -n "$RELNEXT" ]; then
+              END=$((START + RELNEXT - 1))
+            else
+              END=$(wc -l < CHANGELOG.md)
+            fi
+            sed -n "${START},${END}p" CHANGELOG.md > release-notes.md
+          else
+            echo "No specific CHANGELOG header found for version ${VERSION}" >&2
+          fi
+
+          # If extraction failed or produced empty file, fall back to full changelog
           if [ ! -s release-notes.md ]; then
-            echo "No CHANGELOG section for [$VERSION]" >&2
-            exit 1
+            echo "Falling back to full CHANGELOG" >&2
+            cat CHANGELOG.md > release-notes.md
           fi
 
       - name: Create GitHub Release
